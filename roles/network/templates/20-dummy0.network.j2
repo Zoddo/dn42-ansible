@@ -1,0 +1,35 @@
+# {{ ansible_managed }}
+
+[Match]
+Name=dummy0
+
+[Network]
+LinkLocalAddressing=no
+
+
+[Address]
+Address={{ network_dummy_ipv4 }}/32
+
+[Address]
+Address={{ network_dummy_ipv4_additional }}/32
+PreferredLifetime=0
+
+[Route]
+Destination=172.16.0.0/12
+Type=throw
+
+[Route]
+Destination=10.0.0.0/8
+Type=throw
+
+
+[Address]
+Address={{ network_dummy_ipv6 }}/128
+
+[Address]
+Address={{ network_dummy_ipv6_additional }}/128
+PreferredLifetime=0
+
+[Route]
+Destination=fd00::/8
+Type=throw

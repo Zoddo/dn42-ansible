@@ -1,0 +1,42 @@
+# {{ ansible_managed }}
+
+[Match]
+{% if network_intf_name is defined %}
+Name={{ network_intf_name }}
+{% else %}
+Type=ether
+Kind=!*
+{% endif %}
+
+[Link]
+RequiredFamilyForOnline=ipv6
+ActivationPolicy=always-up
+
+[Network]
+DHCP={{ network_dhcp_mode }}
+
+
+
+{% if network_ipv4_address is defined %}
+[Address]
+Address={{ network_ipv4_address }}/{{ network_ipv4_netmask }}
+
+[Route]
+Destination=0.0.0.0/0
+Gateway={{ network_ipv4_gateway }}
+GatewayOnLink=yes
+{% endif %}
+
+
+
+{% if network_ipv6_address is defined %}
+[Address]
+Address={{ network_ipv6_address }}/{{ network_ipv6_netmask }}
+
+{% if network_ipv6_gateway is defined %}
+[Route]
+Destination=::/0
+Gateway={{ network_ipv6_gateway }}
+GatewayOnLink=yes
+{% endif %}
+{% endif %}

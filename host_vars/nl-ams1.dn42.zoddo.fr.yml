@@ -1,0 +1,5 @@
+network_ipv6_address: 2001:bc8:1640:402c:dc00:ff:fe4a:94cf
+network_ipv6_netmask: 64
+
+network_dummy_ipv4: "172.20.238.175"
+network_dummy_ipv6: "fd81:c3c8:e9a2::175:1"

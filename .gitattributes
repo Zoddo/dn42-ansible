@@ -1,0 +1,4 @@
+*.yml linguist-detectable
+users.yml binary linguist-generated
+secrets.yml binary linguist-generated
+*.asc binary linguist-generated

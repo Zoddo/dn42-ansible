@@ -1,0 +1,8 @@
+locales:
+  - en_US.UTF-8
+  - fr_FR.UTF-8
+
+timezone: "Europe/Paris"
+
+network_dummy_ipv4_additional: "172.20.238.160"
+network_dummy_ipv6_additional: "fd81:c3c8:e9a2::"

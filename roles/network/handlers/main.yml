@@ -1,0 +1,12 @@
+- name: Clean netplan configuration
+  include_tasks: clean_netplan_cfg.yml
+
+- name: Reload network configuration
+  service:
+    name: systemd-networkd.service
+    state: reloaded
+
+- name: Restart systemd-resolved
+  service:
+    name: systemd-resolved.service
+    state: restarted

@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+
+{% for key in item.value.ssh_keys %}
+# {{ key }}
+{{ lookup('file', '../pubkeys/' + key) }}
+{% endfor %}

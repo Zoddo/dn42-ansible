@@ -1,0 +1,51 @@
+- name: Remove netplan # (Scaleway... Why have you installed that on Debian??)
+  apt:
+    name:
+      - netplan.io
+      - ifupdown
+    state: absent
+    autoremove: true
+    purge: true
+  notify: Clean netplan configuration
+
+- name: Create directories for configuration drop-ins
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  loop:
+    - /etc/cloud/cloud.cfg.d
+    - /etc/systemd/network
+    - /etc/systemd/resolved.conf.d
+
+- name: Disable cloud-init network configuration management
+  copy:
+    content: "network: {config: disabled}"
+    dest: /etc/cloud/cloud.cfg.d/99-disable-network-config.cfg
+    owner: root
+    group: root
+    mode: "0644"
+
+- name: Install interfaces configuration
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/network/{{ item }}"
+    owner: root
+    group: root
+    mode: "0644"
+  loop:
+    - 10-public.network
+    - 20-dummy0.netdev
+    - 20-dummy0.network
+  notify: Reload network configuration
+
+- name: Configure systemd-resolved
+  template:
+    src: resolved.conf.j2
+    dest: /etc/systemd/resolved.conf.d/override.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart systemd-resolved

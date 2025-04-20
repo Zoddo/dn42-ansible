@@ -1,0 +1,7 @@
+- name: Setup nodes
+  hosts: all
+  gather_facts: true
+  roles:
+    - role: common
+    - role: ssh
+    - role: users

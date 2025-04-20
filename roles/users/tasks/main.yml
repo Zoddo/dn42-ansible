@@ -1,0 +1,63 @@
+- name: Install sudo
+  apt:
+    name: sudo
+    state: present
+
+- name: Configure sudo with NOPASSWD for Ansible
+  community.general.sudoers:
+    name: ansible-nopasswd
+    group: sudo
+    runas: root
+    nopassword: true
+    commands: ALL
+    state: present
+    validation: required
+
+- name: Create user
+  user:
+    name: "{{ item.key }}"
+    group: "{{ item.value.default_group | default('users') }}"
+    groups: "{{ item.value.groups | default([]) }}"
+    password: "{{ item.value.password | default(omit) }}"
+    shell: "{{ item.value.shell | default('/bin/bash') }}"
+    skeleton: "{{ not (item.value.system | default(false)) }}"
+    system: "{{ item.value.system | default(false) }}"
+    state: present
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Configure SSH keys
+  authorized_key:
+    user: "{{ item.key }}"
+    path: "/home/{{ item.key }}/.ssh/authorized_keys"
+    key: "{{ lookup('template', 'authorized_keys.j2') }}"
+    exclusive: true
+  when: not (item.value.system | default(false)) and item.value.ssh_keys is defined
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Remove SSH keys if undefined
+  file:
+    path: "/home/{{ item.key }}/.ssh/authorized_keys"
+    state: absent
+  when: not (item.value.system | default(false)) and item.value.ssh_keys is not defined
+  loop: "{{ users | dict2items }}"
+  loop_control:
+    label: "{{ item.key }}"
+
+- name: Get list of all local users
+  find:
+    path: /home/
+    file_type: directory
+  register: all_users
+
+- name: Remove non-system users that aren't in the config anymore
+  user:
+    name: "{{ item }}"
+    state: absent
+    remove: true
+  when: item not in users
+  loop: "{{ all_users.files | map(attribute='path') | map('basename') | list }}"
+  check_mode: "{{ remove_users is not defined }}"

@@ -1,0 +1,14 @@
+- name: Find netplan files
+  find:
+    path: /run/systemd/network/
+    pattern: "*netplan*"
+  register: netplan_files
+
+- name: Delete old netplan files
+  file:
+    path: "{{ item.path }}"
+    state: absent
+  loop: "{{ netplan_files.files }}"
+  loop_control:
+    label: "{{ item.path }}"
+  notify: Reload network configuration

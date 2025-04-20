@@ -1,0 +1,8 @@
+# {{ ansible_managed }}
+
+[Resolve]
+{% for nameserver in network_nameservers %}
+DNS={{ nameserver }}
+{% endfor %}
+
+Domains={{ network_dns_suffix }}

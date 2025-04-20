@@ -1,0 +1,30 @@
+- name: Install essential tools
+  apt:
+    update_cache: true
+    name:
+      - locales
+      - tzdata
+      - systemd-resolved
+      - nano
+      - htop
+      - unattended-upgrades
+      - needrestart
+      - molly-guard
+    state: present
+
+- name: Set hostname
+  hostname:
+    name: "{{ inventory_hostname }}"
+
+- name: Set locales
+  locale_gen:
+    name: "{{ locales }}"
+
+- name: Set timezone
+  timezone:
+    name: "{{ timezone }}"
+
+- name: Configure network
+  import_role:
+    name: network
+  tags: network
